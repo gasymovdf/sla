@@ -29,12 +29,13 @@ def _gaussian(x, amp, v, sig):
     return amp * np.exp(-0.5*yy**2)
 
 
-def read_nbursts_results(file, two_comp=False, losvd_id=0):
+def read_nbursts_results(file, two_comp=False, losvd_id=0, bin_sch=False):
     """
     Function to read NBursts results.
     """
     hdr = fits.getheader(file)
     sp = fits.getdata(file, 'SPECTRUM')
+    bins = fits.getdata(file, 'BIN_SCHEMA')
 
     flux = sp['FLUX']
     err = sp['ERROR']
@@ -46,7 +47,7 @@ def read_nbursts_results(file, two_comp=False, losvd_id=0):
     wave = sp[0]['WAVE']
     goodpixels = sp['GOODPIXELS']
     velscale = np.log(wave[1]/wave[0])*299792.45
-
+    
     if two_comp:
         vels = sp['V'][:, losvd_id]
         sigs = sp['SIG'][:, losvd_id]
@@ -54,17 +55,10 @@ def read_nbursts_results(file, two_comp=False, losvd_id=0):
         vels = sp['V']
         sigs = sp['SIG']
 
-    # from matplotlib import pyplot as plt
-    # ibin = 0
-    # msk = sp[ibin]['GOODPIXELS'] != 0
-    # plt.plot(sp[ibin]['WAVE'][msk], sp[ibin]['FLUX'][msk], '.', color='red')
-    # plt.plot(sp[ibin]['WAVE'], sp[ibin]['FLUX'])
-    # plt.plot(sp[ibin]['WAVE'], sp[ibin]['FIT'])
-    # plt.plot(sp[ibin]['WAVE'], sp[ibin]['FIT_UNCONV'], color='purple')
-    # plt.show()
-    # print(sp.columns)
-    # print(sp[ibin]['FIT_UNCONV'])
-    # qwef
+    if bin_sch:
+        bin_schema = bins['BINNUM'][0]
+        return wave, flux, err, fit_star_unconv, fit_comp, goodpixels, vels, sigs, velscale, bin_schema
+    
     return wave, flux, err, fit_star_unconv, fit_comp, goodpixels, vels, sigs, velscale
 
 
