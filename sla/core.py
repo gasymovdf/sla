@@ -199,8 +199,8 @@ def recover_losvd_2d(specs, templates, goodpixels, vels, sigs, velscale, nvbins=
             fit_ind = ind[int(ib_num + 1 - (reg_num_bins)/2):int(ib_num + (reg_num_bins)/2)+1]
         elif ib_num <= reg_num_bins/2:
             fit_ind = ind[:reg_num_bins]
-        elif ib_num >= 66 - 1 - reg_num_bins/2:
-            fit_ind = ind[(66 - reg_num_bins):]
+        elif ib_num >= reg_num_bins - 1 - reg_num_bins/2:
+            fit_ind = ind[(reg_num_bins - reg_num_bins):]
 
         for i, llam in enumerate(lamdas):
             if i_iter == 1:
