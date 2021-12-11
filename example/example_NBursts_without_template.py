@@ -26,7 +26,9 @@ def processed(file, lambdas, obj='', reg_type='smooth1', lam_range=[4500, 5500])
         goodpixels_emis_exclude = (goodpixels_emis_exclude == 1) | np.array([((wave > line[0] - line[1]/2) & (wave < line[0] + line[1]/2))]*spec.shape[0])
         
     template = sla.calc_template(ssp_dir=ssp, wave_s=wave, spec_s=spec, Age0=Age0, Met0=Met0, R=Res, mdegree=mdegree, z=z, mask=goodpixels_emis_exclude)
-
+    template = (template.T / np.nanmedian(template, axis=1)).T
+    spec = (spec.T / np.nanmedian(spec, axis=1)).T
+    
     sla.recover_losvd_2d(spec, template, goodpixels_emis_exclude, vels, sigs, velscale,
                          lamdas=lambdas, path='../result/', error_2d=err, lim_V_fit=[-400, 400], lim_V_weight=400,
                          reg_type_losvd=reg_type, reg_type_bins='L2', reg_num_bins=1, plot=True,
