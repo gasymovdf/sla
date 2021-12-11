@@ -190,7 +190,7 @@ def calc_template(wave_s=[], spec_s=[], ssp_dir='', Age0=[5000], Met0=[0], R=0, 
 def recover_losvd_2d(specs, templates, goodpixels, vels=None, sigs=None, velscale=50, 
                      lamdas=np.array([0]), ofile=None, error_2d=None, z=0, plot=False,
                      path='./', reg_type_losvd='L2', reg_type_bins='L2', reg_num_bins=1, vshift=None,
-                     obj='', wave=None, bin_sch=None, num_iter=1, i_iter=1, temp_losvd=None, manga=False,
+                     obj='', wave=None, bin_sch=None, num_iter=1, i_iter=1, temp_losvd=None, manga=False, pa=90,
                      monte_carlo_err=False, num_mc_iter=100, mc_iter=False, lim_V_fit=[-500, 500], lim_V_weight=500):
     """
     Recover stellar LOSVD in each spectral bin for different smoothing
@@ -229,11 +229,9 @@ def recover_losvd_2d(specs, templates, goodpixels, vels=None, sigs=None, velscal
     matrix3d = np.zeros((nspec, templates.shape[1], nvbins))
     if not mc_iter:
         out_fluxes = np.zeros((nspec, npix))
-
-    templates /= np.nanmedian(templates)
-    specs /= np.nanmedian(specs)
-    # if specs.ndim == 2:
-    #     specs /= factor
+    templates = (templates.T / np.nanmedian(templates, axis=1)).T
+    specs = (specs.T / np.nanmedian(specs, axis=1)).T
+    
     for ibin in range(nspec):
         if gauss_conv:
             out_losvd2d_gau[ibin, :] = get_losvd((vels[ibin]-vshift)/velscale, 
@@ -348,7 +346,7 @@ def recover_losvd_2d(specs, templates, goodpixels, vels=None, sigs=None, velscal
     hdul.writeto(ofile, overwrite=True)
     if plot:
         if manga:
-            plot_losvd_manga(out_losvd2d, vbins, lamdas, bin_sch, obj=obj, path=path, ofile=ofile_pdf, pa=95)
+            plot_losvd_manga(out_losvd2d, vbins, lamdas, bin_sch, obj=obj, path=path, ofile=ofile_pdf, pa=pa)
         else:
             plot_losvd_longslit(out_losvd2d, vbins, R, lamdas, bin_sch, obj=obj, path=path, ofile=ofile_pdf, vshift=vshift)
     print(f"Write output in file: {ofile}")
