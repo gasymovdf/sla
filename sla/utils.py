@@ -2,34 +2,13 @@ import numpy as np
 from astropy.io import fits
 from matplotlib import pyplot as plt
 import lmfit
-
-def get_data_nbursts(spec_i, nvbins=51, two_comp=False, losvd_id=0):
-    if two_comp:
-        par_vel = spec_i['V'][losvd_id][0]
-        par_sig = spec_i['SIG'][losvd_id][0]
-    else:
-        par_vel = spec_i['V']
-        par_sig = spec_i['SIG']
-
-    flux = spec_i['FLUX']
-    fit = spec_i['FIT']
-    fit_star_unconv = spec_i['FIT_UNCONV']
-    fit_emis = np.sum(spec_i['FIT_COMP'][1:, :, :],
-                      axis=0).flatten()  # np.zeros(len(fit))
-    fit_star = fit - fit_emis
-    xx = np.arange(flux.size)
-
-    mask = ((np.isfinite(flux)) & (xx > (nvbins-1)/2) & (xx < xx.size-(nvbins-1)/2) &
-            (fit_emis <= np.nanmax(fit_emis)/1e6))
-    return par_vel, par_sig, flux, fit, fit_star_unconv, fit_emis, fit_star, xx, mask
-
+from vorbin.voronoi_2d_binning import voronoi_2d_binning
 
 def _gaussian(x, amp, v, sig):
     yy = (x - v) / sig
     return amp * np.exp(-0.5*yy**2)
 
-
-def read_nbursts_results(file, two_comp=False, losvd_id=0, bin_sch=False):
+def read_nbursts_results(file, two_comp=False, losvd_id=0, bin_sch=False, Age_Met=False):
     """
     Function to read NBursts results.
     """
@@ -39,10 +18,9 @@ def read_nbursts_results(file, two_comp=False, losvd_id=0, bin_sch=False):
 
     flux = sp['FLUX']
     err = sp['ERROR']
-    fit_star_unconv = sp['FIT_UNCONV']
     #fit_emis = np.sum(sp['FIT_COMP'][1:, :, :],
     #                  axis=0).flatten()
-    fit = sp['FIT']
+    # fit = sp['FIT']
     fit_comp = sp['FIT_COMP']
     wave = sp[0]['WAVE']
     goodpixels = sp['GOODPIXELS']
@@ -54,13 +32,60 @@ def read_nbursts_results(file, two_comp=False, losvd_id=0, bin_sch=False):
     else:
         vels = sp['V']
         sigs = sp['SIG']
+    if Age_Met:
+        templ = [sp['AGE'], sp['MET']]
+    else:
+        templ = sp['FIT_UNCONV']
 
     if bin_sch:
-        bin_schema = bins['BINNUM'][0]
-        return wave, flux, err, fit_star_unconv, fit_comp, goodpixels, vels, sigs, velscale, bin_schema
-    
-    return wave, flux, err, fit_star_unconv, fit_comp, goodpixels, vels, sigs, velscale
+        bin_schema = bins['BINNUM'][0][bins['BINNUM'][0]!=-1]
+        return wave, flux, err, templ, fit_comp, goodpixels, vels, sigs, velscale, bin_schema
 
+    return wave, flux, err, templ, fit_comp, goodpixels, vels, sigs, velscale
+
+def read_manga_data(file, lam_range=[0, 10000]):
+    """
+    Function to read MaNGA IFU-spectrum.
+    """
+    manga = fits.open(file)
+    wave = manga['WAVE'].data
+    fit_range = (wave > lam_range[0]) & (wave < lam_range[1])
+    wave = wave[fit_range]
+    flux_map = manga['FLUX'].data
+    ivar_map = manga['IVAR'].data
+    mask_map = manga['MASK'].data
+    res = manga['SPECRES'].data[fit_range]
+    velscale = np.log(wave[1]/wave[0])*299792.45
+    c = len(wave)
+    a, b = flux_map.shape[1:]
+
+    st_cont = (wave > 5280) & (wave < 5320)
+    zer = np.zeros(c)
+    flux, err_flux, mask = [], [], []
+    x, y = [], []
+    for i in range(a):
+        for j in range(b):
+            if np.sum(flux_map[:, i, j][fit_range] == zer) < 100:
+                flux.append(flux_map[:, i, j][fit_range])
+                err_flux.append(1/np.sqrt(ivar_map[:, i, j][fit_range]))
+                mask.append(mask_map[:, i, j][fit_range])
+                x.append(j)
+                y.append(i)
+    flux, err_flux, x, y, mask = [np.array(i) for i in [flux, err_flux, x, y, mask]]
+    err_flux[np.isinf(err_flux)] = 100
+    binNum, xBin, yBin, xBar, yBar, sn, nPixels, scale = \
+        voronoi_2d_binning(x, y, np.median(np.array(flux).T[st_cont], axis=0), \
+                        np.nanmedian(np.array(err_flux).T[st_cont], axis=0), 10,
+                        plot=False)
+    flux_o, error_o, mask_o = np.zeros((max(binNum), c)), np.zeros((max(binNum), c)), np.zeros((max(binNum), c))
+    bin_sch2d = -np.ones((a, b))
+    for i in range(max(binNum)):
+        flux_o[i] = np.sum(flux[binNum==i], axis=0)
+        error_o[i] = np.sum(err_flux[binNum==i], axis=0)
+        mask_o[i] = np.any(mask[binNum==i]>0, axis=0)
+        for j in range(len(y[binNum==i])):
+            bin_sch2d[y[binNum==i][j], x[binNum==i][j]] = int(i)
+    return wave, flux_o, error_o, mask_o, velscale, res, bin_sch2d
 
 def fit_LOSVD_2gaussian(file, lfile):
     fits.info(file)

@@ -5,9 +5,8 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-     name='sla-gasymovdf',  
-     version='0.1',
-     scripts=['sla'] ,
+     name='sla',  
+     version='1.2.1',
      author="Gasymov Damir",
      author_email="gasymov.df18@physics.msu.ru",
      description="Non-parametric LOSVD analysis for galaxy spectra",
