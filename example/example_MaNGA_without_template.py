@@ -29,8 +29,8 @@ def processed(file, lambdas, obj='', reg_type='smooth1', lam_range=[4800, 5700])
     template = np.array([template[0]] * spec.shape[0])    
     
     sla.recover_losvd_2d(spec, template, goodpixels_emis_exclude, velscale=velscale,
-                         lamdas=lambdas, path='../result/', error_2d=err, lim_V_fit=[-500, 500], lim_V_weight=500,
-                         reg_type_losvd=reg_type, obj=obj, wave=wave, num_iter=3, bin_sch=bin_sch2d, manga=True, plot=True, pa=95,
+                         lamdas=lambdas, path='../result/', error_2d=err, lim_V_fit=[-400, 400], lim_V_weight=400,
+                         reg_type_losvd=reg_type, obj=obj, wave=wave, num_iter=1, bin_sch=bin_sch2d, manga=True, plot=True, pa=96,
                          monte_carlo_err=False, num_mc_iter=100)
 
 
