@@ -37,7 +37,7 @@ pip install -r requirements.txt
 SLA usage examples are shown for stellar counter-rotating galaxy PGC 66551 (Gasymov, Katkov et al. in prep.). To run examples, first download test dataset which includes:
 
 - MaNGA spectral cube
-- long-slit spectrum taken with the RSS spectrograph mounted on the SALT telescope (South Africa).
+- long-slit spectra.
 
 ```
 sh ./data/download.sh 
@@ -49,7 +49,8 @@ sh ./data/download.sh
 
 Example of stellar LOSVD recovery along pseudoslit spectrum taken from MaNGA spectral cube along the major axis
 ```
-python3 ./example/example_MaNGA_without_template.py
+cd example
+python3 example_MaNGA_without_template.py
 ```
 
 #### Example 2
@@ -57,6 +58,7 @@ python3 ./example/example_MaNGA_without_template.py
 LOSVD is determined from the RSS long slit spectrum using the un-broadened stellar population template (SSP PEGASE.HR), which was constructed by applying in advance [NBursts](https://ui.adsabs.harvard.edu/abs/2007IAUS..241..175C/abstract) full spectral fitting method.
 
 ```
+cd example
 python3 ./example/example_NBursts_with_template.py
 ```
 
@@ -66,6 +68,7 @@ python3 ./example/example_NBursts_with_template.py
 The same as in the previous example, but without using NBursts output. The necessary stellar population template is selected from the model grid for given approximate SSP parameters
 
 ```
+cd example
 python3 ./example/example_NBursts_without_template.py
 ```
 
