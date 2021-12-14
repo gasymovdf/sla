@@ -16,6 +16,10 @@ pip install sla
 
 The __sla__ package uses the following dependencies, which should be installed when installing through the pip manager:
 
+```
+pip install -r requirements.txt
+```
+
 - numpy
 - scipy
 - matplotlib
