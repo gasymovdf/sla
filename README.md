@@ -59,7 +59,7 @@ LOSVD is determined from the RSS long slit spectrum using the un-broadened stell
 
 ```
 cd example
-python3 ./example/example_NBursts_with_template.py
+python3 example_NBursts_with_template.py
 ```
 
 
@@ -69,7 +69,7 @@ The same as in the previous example, but without using NBursts output. The neces
 
 ```
 cd example
-python3 ./example/example_NBursts_without_template.py
+python3 example_NBursts_without_template.py
 ```
 
 
