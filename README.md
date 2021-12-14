@@ -4,7 +4,7 @@ Code for the non-parametrical recovery of stellar Line-Of-Sight Velocity Distrib
 
 Stellar LOSVD recovery from the observed galaxy spectra is equivalent to a deconvolution and can be solved as a linear inverse problem. To overcome its ill-posed nature we apply smoothing regularization. Here we present a non-parametric fitting technique and show real-world application to **MaNGA** spectral data cubes and **long-slit spectrum** of stellar counter-rotating galaxies.
 
-More information about this technique can be found in [ADASS XXXI conference proceeding](https://arxiv.org) and examples [here](https://github.com/gasymovdf/sla)
+More information about this technique can be found in [ADASS XXXI conference proceeding](https://arxiv.org) and in [examples](example/)
 
 
 ## Installation
