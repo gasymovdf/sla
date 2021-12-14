@@ -11,7 +11,7 @@ More information about this technique can be found in [ADASS XXXI conference pro
 Use the package manager `pip` to install __sla__.
 
 ```
-pip install sla
+pip install sla==1.3.3
 ```
 
 The __sla__ package uses the following dependencies, which should be installed when installing through the pip manager:
