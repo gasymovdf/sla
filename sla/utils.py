@@ -14,7 +14,8 @@ def read_nbursts_results(file, two_comp=False, losvd_id=0, bin_sch=False, Age_Me
     """
     hdr = fits.getheader(file)
     sp = fits.getdata(file, 'SPECTRUM')
-    bins = fits.getdata(file, 'BIN_SCHEMA')
+    if bin_sch:
+        bins = fits.getdata(file, 'BIN_SCHEMA')
 
     flux = sp['FLUX']
     err = sp['ERROR']
