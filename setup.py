@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='sla',  
-     version='1.3.3',
+     version='1.4.1',
      author="Gasymov Damir",
      author_email="gasymov.df18@physics.msu.ru",
      description="Non-parametric LOSVD analysis for galaxy spectra",
@@ -26,7 +26,6 @@ setuptools.setup(
                         "astropy==5.0",
                         "lmfit==1.0.3",
                         "vorbin==3.1.4",
-                        "pseudoslit==0.0.2",
                         "glob2==0.7",
                         "PyPDF2==1.26.0",
                         "tqdm==4.62.3"]

@@ -230,7 +230,7 @@ def recover_losvd_2d(specs, templates, goodpixels, vels=None, sigs=None, velscal
     if not mc_iter:
         out_fluxes = np.zeros((nspec, npix))
     templates = (templates.T / np.nanmedian(templates, axis=1)).T
-    specs = (specs.T / np.nanmedian(specs, axis=1)).T
+    # specs = (specs.T / np.nanmedian(specs, axis=1)).T
     
     for ibin in range(nspec):
         if gauss_conv:
@@ -298,7 +298,7 @@ def recover_losvd_2d(specs, templates, goodpixels, vels=None, sigs=None, velscal
         mc_rec_losvd = np.zeros((num_mc_iter, lamdas.size, nvbins, nspec))
         for i in range(num_mc_iter):
             print(f'{i+1}/{num_mc_iter} iteration of Monte-Carlo')
-            noise = np.random.rand(nspec, npix, len(lamdas)) * out_error3d
+            noise = 2 * (np.random.rand(nspec, npix, len(lamdas)) - 0.5) * out_error3d
             bestfit_noise = out_bestfits + noise
             mc_rec_losvd[i] = recover_losvd_2d(bestfit_noise, templates, goodpixels, vels, sigs, velscale,
                          lamdas=lamdas, reg_type_losvd=reg_type_losvd, reg_type_bins='L2', reg_num_bins=1,
